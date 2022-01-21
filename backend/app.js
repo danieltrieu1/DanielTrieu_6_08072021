@@ -1,7 +1,5 @@
 const express = require('express');
-// const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-
 const path = require('path');
 
 const sauceRoutes = require('./routes/sauce');
@@ -16,6 +14,10 @@ mongoose
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
+const helmet = require('helmet');
+
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }))
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -30,12 +32,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use(bodyParser.json());
 app.use(express.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/api/sauce', sauceRoutes);
+app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
