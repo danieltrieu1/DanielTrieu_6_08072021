@@ -23,7 +23,7 @@ mongoose
 
 const app = express();
 
-// Sécurisation des en-têtes http
+// Sécurisation des en-têtes http: Préventions contre les attaques XSS
 const helmet = require('helmet');
 
 app.use(helmet());
@@ -53,7 +53,6 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // Routes
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
-
 
 // Export
 module.exports = app;
