@@ -63,21 +63,28 @@ exports.getOneSauce = (req, res, next) => {
 //------------------------------------------------------------------------
 
 exports.updateSauce = (req, res, next) => {
-  const sauceObject = req.file
-    ? {
-        ...JSON.parse(req.body.sauce),
-        imageUrl: `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`,
-      }
-    : { ...req.body };
-  Sauce.updateOne(
-    { _id: req.params.id },
-    { ...sauceObject, _id: req.params.id }
-  )
-    .then(() => res.status(200).json({ message: "Sauce modifié !" }))
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      if (sauce.userId !== req.auth) {
+        res.status(400).json({ error })
+      } else if (sauce.userId == req.auth) {
+          const filename = sauce.imageUrl.split("/images/")[1];
+          fs.unlink(`images/${filename}`, () => {
+            const sauceObject = req.file ? 
+              {
+                ...JSON.parse(req.body.sauce),
+                imageUrl: `${req.protocol}://${req.get("host")}/images/${ req.file.filename }`,
+              } : { ...req.body };
+
+            Sauce.updateOne({ _id: req.params.id },{ ...sauceObject, _id: req.params.id })
+              .then(() => res.status(200).json({ message: "Sauce modifié !" }))
+              .catch((error) => res.status(400).json({ error }));
+          });
+        }
+    })
     .catch((error) => res.status(400).json({ error }));
 };
+
 
 //------------------------------------------------------------------------
 // DELETE / Suppression de ressources
@@ -86,14 +93,18 @@ exports.updateSauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
-      const filename = sauce.imageUrl.split("/images/")[1];
+      if (sauce.userId !== req.auth) {
+        res.status(400).json({ error })
+      } else if (sauce.userId == req.auth) {
 
-      //
-      fs.unlink(`images/${filename}`, () => {
-        Sauce.deleteOne({ _id: req.params.id })
-          .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
-          .catch((error) => res.status(400).json({ error }));
-      });
+          const filename = sauce.imageUrl.split("/images/")[1];
+
+          fs.unlink(`images/${filename}`, () => {
+            Sauce.deleteOne({ _id: req.params.id })
+              .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
+              .catch((error) => res.status(400).json({ error }));
+          });  
+        }
     })
     .catch((error) => res.status(500).json({ error }));
 };
