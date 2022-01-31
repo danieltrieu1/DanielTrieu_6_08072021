@@ -1,8 +1,9 @@
 const User = require('../models/User')
 
-//
+// Permet le chiffrage du mot passe avec la méthode .hash()
 const bcrypt = require('bcrypt');
-//
+
+// Permet de créer et vérifier un token d'authentificaton
 const jwt = require('jsonwebtoken');
 
 //------------------------------------------------------------------------
@@ -10,6 +11,8 @@ const jwt = require('jsonwebtoken');
 //------------------------------------------------------------------------
 
 exports.signup = (req, res, next) => {
+
+    // .hach(): Hachage du mot de passe / "Salage" = 10
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
         const user = new User({
@@ -17,9 +20,15 @@ exports.signup = (req, res, next) => {
           password: hash
         });
         user.save()
+
+          // Statut 201 - Created: indique que la requête a réussie et que la ressource a été créée.
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+
+          // Statut 400 - Bad Request: indique que la syntaxe de la requête est invalide
           .catch(error => res.status(400).json({ error }));
       })
+
+      // Statut 500 - Internal Server Error: indique une erreur interne du serveur non identifiée
       .catch(error => res.status(500).json({ error }));
 };
 
@@ -28,6 +37,8 @@ exports.signup = (req, res, next) => {
 //------------------------------------------------------------------------
 
 exports.login = (req, res, next) => {
+
+    // findOne(): recherche et renvoie le document qui correspond aux critères de sélections donnés 
     User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
@@ -40,9 +51,15 @@ exports.login = (req, res, next) => {
             }
             res.status(200).json({
               userId: user._id,
+              
+              //.sign(): Encodage du nouveau token qui contient l'id de l'utilisateur en tant que payload
               token: jwt.sign(
                 { userId: user._id },
-                'RANDOM_TOKEN_SECRET',
+                
+                // Chaîne secrète d'encodage du token
+                process.env.RANDOM_TOKEN_SECRET,
+                
+                // Durée de validité du token
                 { expiresIn: '24h' }
               )
             });

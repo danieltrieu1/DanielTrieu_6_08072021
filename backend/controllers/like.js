@@ -24,10 +24,10 @@ exports.likeSauce = (req, res, next) => {
       }
     )
       // Affichage d'une alerte confirmant l'ajout du like
-      // Statut 200 = OK / Réussite de la requête
+      // Statut 200 - OK: indique la réussite de la requête
       .then(() => res.status(200).json({ message: "Like ajouté !" }))
 
-      // Erreur 400 = Bad Request / Syntaxe de la requête invalide
+      // Statut 400 - Bad Request: indique que la syntaxe de la requête est invalide
       .catch((error) => res.status(400).json({ error }));
 
   //------------------------------------------------------------------------
@@ -49,11 +49,11 @@ exports.likeSauce = (req, res, next) => {
 
   } else {
 
-    // findOne(): Recherche et renvoie le modèle de sauce correspondant aux critères de sélection donnés. 
+    // findOne(): recherche et renvoie le document qui correspond aux critères de sélections donnés 
     Sauce.findOne({ _id: req.params.id })
       .then((sauce) => {
 
-        // includes(): Détermine si le tableau usersLiked contient une valeur et renvoi un booléen.
+        // includes(): Détermine si le tableau usersLiked contient une valeur et renvoi un booléen
         if (sauce.usersLiked.includes(req.body.userId)) {
 
           // updateOne(): Mise à jour du modèle avec les nouvelles valeurs des champs spécifiées 

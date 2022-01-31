@@ -2,12 +2,16 @@ const Sauce = require("../models/Sauce");
 const fs = require("fs");
 
 //------------------------------------------------------------------------
-// CREATE
+// CREATE / Création de ressources
 //------------------------------------------------------------------------
 
+//
 exports.createSauce = (req, res, next) => {
   const sauceObject = JSON.parse(req.body.sauce);
+
+  // Suppression de _id car l'utilisation du mot-clé new avec un modèle Mongoose crée par défaut un champ _id
   delete sauceObject._id;
+
   const sauce = new Sauce({
     ...sauceObject,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
@@ -21,11 +25,12 @@ exports.createSauce = (req, res, next) => {
 };
 
 //------------------------------------------------------------------------
-// READ
+// READ / Lecture de ressources
 //------------------------------------------------------------------------
 
 exports.getAllSauces = (req, res, next) => {
-  // Utilisation de la méthode find() afin de renvoyer un tableau contenant toutes les sauces présentes dans la base de données.
+  
+  // find(): Renvoie un tableau contenant toutes les sauces présentes dans la base de données
   Sauce.find()
     .then((sauces) => {
       res.status(200).json(sauces);
@@ -54,7 +59,7 @@ exports.getOneSauce = (req, res, next) => {
 };
 
 //------------------------------------------------------------------------
-// UPDATE
+// UPDATE / Modification de ressources
 //------------------------------------------------------------------------
 
 exports.updateSauce = (req, res, next) => {
@@ -75,13 +80,15 @@ exports.updateSauce = (req, res, next) => {
 };
 
 //------------------------------------------------------------------------
-// DELETE
+// DELETE / Suppression de ressources
 //------------------------------------------------------------------------
 
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
       const filename = sauce.imageUrl.split("/images/")[1];
+
+      //
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
           .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
@@ -90,6 +97,3 @@ exports.deleteSauce = (req, res, next) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
-
-
-
