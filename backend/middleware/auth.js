@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
 
     // .verify(): Décodage du token -> Renverra une erreur si celui-ci n'est pas valide
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const decodedToken = jwt.verify(token, process.env.RANDOM_TOKEN_SECRET);
 
     // Extraction de l'id contenu dans le token
     const userId = decodedToken.userId;

@@ -1,4 +1,6 @@
 const express = require("express");
+
+// Permet de créer des routeurs séparés pour chaque route principale de l'application
 const router = express.Router();
 
 const sauceCtrl = require("../controllers/sauce");
@@ -6,6 +8,8 @@ const likeCtrl = require("../controllers/like");
 
 const auth = require("../middleware/auth");
 const multer = require("../middleware/multer-config.js");
+
+// Enregistrement des routes individuelles
 
 // CREATE
 router.post("/", auth, multer, sauceCtrl.createSauce);
@@ -22,4 +26,5 @@ router.put("/:id", auth, multer, sauceCtrl.updateSauce);
 // DELETE
 router.delete("/:id", auth, sauceCtrl.deleteSauce);
 
+// Exportation des méthodes attribuées aux routes
 module.exports = router;

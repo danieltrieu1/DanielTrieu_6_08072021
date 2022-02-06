@@ -1,3 +1,4 @@
+// Gestionnaire de fichiers entrant dans les requêtes HTTP
 const multer = require('multer');
 
 // Extensions autorisées de fichier

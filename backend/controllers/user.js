@@ -1,3 +1,4 @@
+// Utlisation du modèle de mongoose
 const User = require('../models/User')
 
 // Permet le chiffrage du mot passe avec la méthode .hash()
@@ -44,6 +45,8 @@ exports.login = (req, res, next) => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur non trouvé !' });
         }
+
+        // Compare le mot de passe entré par l'utilisateur avec le hash enregistré dans la base de donnée
         bcrypt.compare(req.body.password, user.password)
           .then(valid => {
             if (!valid) {
@@ -59,7 +62,7 @@ exports.login = (req, res, next) => {
                 // Chaîne secrète d'encodage du token
                 process.env.RANDOM_TOKEN_SECRET,
                 
-                // Durée de validité du token
+                // Durée de validité du token: l'utilisateur devra se reconnecter au bout de 24h
                 { expiresIn: '24h' }
               )
             });

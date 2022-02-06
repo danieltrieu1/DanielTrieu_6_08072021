@@ -1,7 +1,9 @@
+// Bibliothèque standard
 const http = require("http");
+
 const app = require("./app");
 
-// la fonction normalizePort renvoie un port valide.
+// la fonction normalizePort renvoie un port valide
 const normalizePort = (val) => {
   const port = parseInt(val, 10);
 
@@ -13,7 +15,7 @@ const normalizePort = (val) => {
   }
   return false;
 };
-const port = normalizePort(process.env.PORT || "3000");
+const port = normalizePort(process.env.PORT);
 app.set("port", port);
 
 // la fonction errorHandler recherche les différentes erreurs et les gère de manière appropriée. 
@@ -39,6 +41,7 @@ const errorHandler = (error) => {
   }
 };
 
+// Le serveur est démarré avec la méthode createServer du package http
 const server = http.createServer(app);
 
 server.on("error", errorHandler);

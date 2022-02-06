@@ -1,4 +1,7 @@
+// Utlisation du modèle de mongoose
 const Sauce = require("../models/Sauce");
+
+// File System: Permet de créer et gérer les fichiers pour y stocker ou lire des informations 
 const fs = require("fs");
 
 //------------------------------------------------------------------------
@@ -13,12 +16,16 @@ exports.createSauce = (req, res, next) => {
   delete sauceObject._id;
 
   const sauce = new Sauce({
+
+    // Opération spread permettant de faire une copie du req.body
     ...sauceObject,
+
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
   });
   sauce
+    // Méthode permettant l'enregistrement de la Sauce dans la base de données
     .save()
     .then(() => res.status(201).json({ message: "Sauce enregistré !" }))
     .catch((error) => res.status(400).json({ error }));
@@ -65,10 +72,9 @@ exports.getOneSauce = (req, res, next) => {
 exports.updateSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
-      if (sauce.userId !== req.auth) {
-        res.status(400).json({ error })
-      } else if (sauce.userId == req.auth) {
+
           const filename = sauce.imageUrl.split("/images/")[1];
+
           fs.unlink(`images/${filename}`, () => {
             const sauceObject = req.file ? 
               {
@@ -80,7 +86,6 @@ exports.updateSauce = (req, res, next) => {
               .then(() => res.status(200).json({ message: "Sauce modifié !" }))
               .catch((error) => res.status(400).json({ error }));
           });
-        }
     })
     .catch((error) => res.status(400).json({ error }));
 };
@@ -93,18 +98,15 @@ exports.updateSauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then((sauce) => {
-      if (sauce.userId !== req.auth) {
-        res.status(400).json({ error })
-      } else if (sauce.userId == req.auth) {
 
           const filename = sauce.imageUrl.split("/images/")[1];
 
+          // fs.unlink: Permet la suppression du fichier
           fs.unlink(`images/${filename}`, () => {
             Sauce.deleteOne({ _id: req.params.id })
               .then(() => res.status(200).json({ message: "Sauce supprimé !" }))
               .catch((error) => res.status(400).json({ error }));
           });  
-        }
     })
     .catch((error) => res.status(500).json({ error }));
 };

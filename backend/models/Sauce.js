@@ -19,4 +19,5 @@ const sauceSchema = mongoose.Schema({
   usersDisliked: { type: Array, required: false, default: [] }
 });
 
+// model(): Transforme le modèle en modèle ré-utilisable
 module.exports = mongoose.model("Sauce", sauceSchema);

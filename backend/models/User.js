@@ -9,4 +9,5 @@ const userSchema = mongoose.Schema({
 // Vérification de l'unicité de l'adresse e-mail
 userSchema.plugin(uniqueValidator);
 
+// model(): Transforme le modèle en modèle ré-utilisable
 module.exports = mongoose.model('User', userSchema);
