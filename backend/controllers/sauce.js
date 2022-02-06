@@ -8,8 +8,9 @@ const fs = require("fs");
 // CREATE / Création de ressources
 //------------------------------------------------------------------------
 
-//
 exports.createSauce = (req, res, next) => {
+
+  // Analyse et converti la chaine JSON sauce en objet Javascript utilisable
   const sauceObject = JSON.parse(req.body.sauce);
 
   // Suppression de _id car l'utilisation du mot-clé new avec un modèle Mongoose crée par défaut un champ _id
@@ -20,11 +21,13 @@ exports.createSauce = (req, res, next) => {
     // Opération spread permettant de faire une copie du req.body
     ...sauceObject,
 
+    //req.protocol = http / req.get('host') = 'localhost:3000' // req.file.filename = nom du fichier téléchargé
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
   });
   sauce
+  
     // Méthode permettant l'enregistrement de la Sauce dans la base de données
     .save()
     .then(() => res.status(201).json({ message: "Sauce enregistré !" }))
